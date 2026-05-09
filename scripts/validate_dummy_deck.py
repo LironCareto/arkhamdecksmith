@@ -15,11 +15,19 @@ def main() -> None:
         investigator_code="01001",
         investigator_name="Roland Banks",
         intended_role="fighter",
-        cards={
+        main_deck_cards={
             "01020": 2,
             "01021": 2,
             "01022": 26,
         },
+        signature_cards={
+            "01006": 1,
+        },
+        weakness_cards={
+            "01007": 1,
+            "RANDOM_BASIC_WEAKNESS": 1,
+        },
+        deck_size_requirement=30,
     )
 
     report = validate_deck(deck)

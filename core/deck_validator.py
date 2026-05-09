@@ -6,23 +6,22 @@ from core.models import (
     ValidationReport,
 )
 
-MAX_COPIES_PER_CARD = 2
-STANDARD_DECK_SIZE = 30
+MAX_COPIES_PER_TITLE = 2
 
 
-def validate_deck_size(
+def validate_main_deck_size(
     deck: DeckCandidate,
 ) -> list[ValidationIssue]:
-    total_cards = sum(deck.cards.values())
+    total_cards = sum(deck.main_deck_cards.values())
 
-    if total_cards != STANDARD_DECK_SIZE:
+    if total_cards != deck.deck_size_requirement:
         return [
             ValidationIssue(
                 severity="error",
-                code="INVALID_DECK_SIZE",
+                code="INVALID_MAIN_DECK_SIZE",
                 message=(
-                    f"Deck contains {total_cards} cards "
-                    f"instead of {STANDARD_DECK_SIZE}."
+                    f"Main deck contains {total_cards} cards "
+                    f"instead of {deck.deck_size_requirement}."
                 ),
             )
         ]
@@ -30,19 +29,19 @@ def validate_deck_size(
     return []
 
 
-def validate_card_copies(
+def validate_main_deck_copies(
     deck: DeckCandidate,
 ) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
 
-    for card_code, quantity in deck.cards.items():
-        if quantity > MAX_COPIES_PER_CARD:
+    for card_code, quantity in deck.main_deck_cards.items():
+        if quantity > MAX_COPIES_PER_TITLE:
             issues.append(
                 ValidationIssue(
                     severity="error",
-                    code="TOO_MANY_COPIES",
+                    code="TOO_MANY_MAIN_DECK_COPIES",
                     message=(
-                        f"Card {card_code} has "
+                        f"Main deck card {card_code} has "
                         f"{quantity} copies."
                     ),
                     card_code=card_code,
@@ -57,8 +56,8 @@ def validate_deck(
 ) -> ValidationReport:
     issues: list[ValidationIssue] = []
 
-    issues.extend(validate_deck_size(deck))
-    issues.extend(validate_card_copies(deck))
+    issues.extend(validate_main_deck_size(deck))
+    issues.extend(validate_main_deck_copies(deck))
 
     has_errors = any(
         issue.severity == "error"

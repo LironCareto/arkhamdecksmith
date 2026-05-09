@@ -5,6 +5,7 @@ from typing import Literal
 
 
 GameMode = Literal["one_shot", "campaign", "standalone"]
+
 DeckRole = Literal[
     "fighter",
     "cluever",
@@ -45,9 +46,32 @@ class DeckCandidate:
     investigator_code: str
     investigator_name: str
     intended_role: DeckRole
-    cards: dict[str, int]
+
+    main_deck_cards: dict[str, int] = field(default_factory=dict)
+    signature_cards: dict[str, int] = field(default_factory=dict)
+    weakness_cards: dict[str, int] = field(default_factory=dict)
+    permanent_cards: dict[str, int] = field(default_factory=dict)
+    set_aside_cards: dict[str, int] = field(default_factory=dict)
+
     xp_spent: int = 0
+    deck_size_requirement: int = 30
     rationale: str = ""
+
+    @property
+    def all_cards(self) -> dict[str, int]:
+        combined: dict[str, int] = {}
+
+        for card_group in [
+            self.main_deck_cards,
+            self.signature_cards,
+            self.weakness_cards,
+            self.permanent_cards,
+            self.set_aside_cards,
+        ]:
+            for card_code, quantity in card_group.items():
+                combined[card_code] = combined.get(card_code, 0) + quantity
+
+        return combined
 
 
 @dataclass(frozen=True)
