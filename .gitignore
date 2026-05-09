@@ -1,2 +1,7 @@
-/data
+*.tsv
+*.csv
 /test.py
+.qodo
+.gitignore
+__pycache__/
+*.pyc

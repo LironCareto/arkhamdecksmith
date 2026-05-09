@@ -22,44 +22,7 @@ CARDS_URL = "https://arkhamdb.com/api/public/cards/"
 CARDS_OUTPUT = "arkham_cards.tsv"
 UPGRADE_ROUTES_OUTPUT = "arkham_upgrade_routes.tsv"
 
-CARD_COLUMNS = [
-    "code",
-    "name",
-    "real_name",
-    "subname",
-
-    "type_code",
-    "type_name",
-    "subtype_name",
-
-    "faction_code",
-    "faction_name",
-    "faction2_code",
-    "faction2_name",
-    "faction3_code",
-    "faction3_name",
-
-    "cost",
-    "xp",
-    "slot",
-    "traits",
-    "skill_willpower",
-    "skill_intellect",
-    "skill_combat",
-    "skill_agility",
-    "skill_wild",
-    "health",
-    "sanity",
-    "deck_limit",
-    "quantity",
-    "pack_code",
-    "pack_name",
-    "position",
-    "text",
-    "url",
-    "deck_options",
-    "deck_requirements",
-]
+CARD_COLUMNS = None
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -306,9 +269,11 @@ def main() -> None:
 
     cards = pd.read_json(CARDS_URL)
 
-    existing_columns = [c for c in CARD_COLUMNS if c in cards.columns]
-
-    cards = cards[existing_columns].copy()
+    if CARD_COLUMNS is not None:
+        existing_columns = [c for c in CARD_COLUMNS if c in cards.columns]
+        cards = cards[existing_columns].copy()
+    else:
+        cards = cards.copy()
     cards = cards.loc[:, ~cards.columns.duplicated()].copy()
 
     write_tsv(cards, CARDS_OUTPUT)
